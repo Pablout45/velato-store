@@ -82,11 +82,13 @@
         addToCart(product) {
           const selected = { ...product, size: product.selectedSize || 'M' };
           this.cart.push(selected);
-          localStorage.setItem('cart', JSON.stringify(this.cart)); // Guardar el carrito en localStorage
-          window.location.href = 'carrito.html'; // Redirigir al carrito
+          localStorage.setItem('cart', JSON.stringify(this.cart)); // Guardamos el carrito en localStorage
+          setTimeout(() => { // Añadimos un pequeño retraso para asegurarnos de que el producto se guarda antes de redirigir
+            window.location.href = 'carrito.html'; // Redirigimos al carrito después de agregar
+          }, 200);
         },
         fetchProducts() {
-          fetch('productos.json') // Asumimos que tienes productos.json con la lista de productos
+          fetch('productos.json') // Asegúrate de tener un archivo productos.json
             .then(res => res.json())
             .then(data => {
               this.products = data.map(p => ({ ...p, selectedSize: 'M' }));
@@ -111,4 +113,3 @@
   </script>
 </body>
 </html>
-
