@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VELATO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/scrollreveal"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://www.paypal.com/sdk/js?client-id=TU_CLIENT_ID&currency=EUR"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600&display=swap" rel="stylesheet">
+    <style>
+      body { font-family: 'Outfit', sans-serif; }
+    </style>
+  </head>
+  <body class="bg-white text-gray-900" x-data="cartHandler()">
+    <!-- Header -->
+    <header class="flex justify-between items-center p-6 border-b">
+      <h1 class="text-2xl font-semibold tracking-widest">VELATO</h1>
+      <nav class="space-x-6 text-sm">
+        <a href="#about" class="hover:underline">La Marca</a>
+        <a href="#products" class="hover:underline">Colección</a>
+        <a href="#shop" class="hover:underline">Tienda</a>
+        <a href="#contact" class="hover:underline">Contacto</a>
+      </nav>
+    </header>
+
+    <!-- Carrito -->
+    <div class="fixed top-6 right-6 bg-white border rounded-lg shadow-lg p-4 w-72 z-50" x-show="cart.length > 0" x-transition>
+      <h2 class="text-lg font-semibold mb-2">🛒 Tu carrito</h2>
+      <template x-for="(item, index) in cart" :key="index">
+        <div class="flex justify-between items-center mb-2">
+          <span x-text="item.name"></span>
+          <span>€<span x-text="item.price.toFixed(2)"></span></span>
+          <button @click="removeFromCart(index)" class="text-red-500 text-sm">✕</button>
+        </div>
+      </template>
+      <div class="border-t pt-2 mt-2">
+        <p>Total: <strong>€<span x-text="total"></span></strong></p>
+        <div id="paypal-button-container" class="mt-3"></div>
+      </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="h-[90vh] flex flex-col items-center justify-center text-center px-4">
+      <img src="logo.png" alt="Logo Velato" class="w-28 mb-4 animate-fade-in">
+      <h2 class="text-4xl font-semibold mb-2">Sutileza con Carácter</h2>
+      <p class="text-gray-600 max-w-md mb-6">Moda minimalista y elegante con un toque enigmático. Diseñado para quienes saben mirar más allá.</p>
+      <a href="#shop" class="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition">Comprar Ahora</a>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-16 bg-gray-50 px-6 text-center">
+      <h3 class="text-2xl font-semibold mb-4">Nuestra Filosofía</h3>
+      <p class="max-w-2xl mx-auto text-gray-700">VELATO nace de la idea de que el verdadero estilo no grita, sino que susurra. Cada prenda está diseñada para ofrecer calidad, discreción y un carácter único que se revela en los detalles.</p>
+    </section>
+
+    <!-- Product Highlights -->
+    <section id="products" class="py-16 px-6">
+      <h3 class="text-2xl font-semibold text-center mb-10">Colección Destacada</h3>
+      <div class="grid md:grid-cols-3 gap-8">
+        <template x-for="product in products" :key="product.name">
+          <div class="border rounded-xl p-4 text-center hover:shadow-xl transition">
+            <img :src="product.img" alt="Producto" class="rounded mb-4 mx-auto">
+            <h4 class="text-lg font-medium" x-text="product.name"></h4>
+            <p class="text-gray-500 text-sm">Diseño exclusivo, alta calidad</p>
+            <p class="font-bold mb-2">€<span x-text="product.price.toFixed(2)"></span></p>
+            <button @click="addToCart(product)" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">Añadir al carrito</button>
+          </div>
+        </template>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16 text-center px-6">
+      <h3 class="text-2xl font-semibold mb-4">Contacto</h3>
+      <p class="text-gray-600 mb-6">¿Quieres colaborar o hacer una consulta? Escríbenos.</p>
+      <form class="max-w-md mx-auto space-y-4">
+        <input type="text" placeholder="Nombre" class="w-full border p-2 rounded" required />
+        <input type="email" placeholder="Email" class="w-full border p-2 rounded" required />
+        <textarea placeholder="Mensaje" class="w-full border p-2 rounded h-32" required></textarea>
+        <button class="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition">Enviar</button>
+      </form>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center py-6 text-sm text-gray-500">
+      © 2025 VELATO. Todos los derechos reservados.
+    </footer>
+
+    <!-- ScrollReveal -->
+    <script>
+      ScrollReveal().reveal('section', { duration: 1000, distance: '50px', origin: 'bottom', reset: false });
+
+      document.addEventListener('alpine:init', () => {
+        Alpine.data('cartHandler', () => ({
+          cart: [],
+          products: [],
+          addToCart(product) { this.cart.push(product); },
+          removeFromCart(index) { this.cart.splice(index, 1); },
+          get total() { return this.cart.reduce((sum, item) => sum + item.price, 0).toFixed(2); },
+          async fetchProducts() {
+            const res = await fetch('productos.json');
+            this.products = await res.json();
+          },
+          init() {
+            this.fetchProducts();
+            paypal.Buttons({
+              createOrder: (data, actions) => {
+                return actions.order.create({
+                  purchase_units: [{ amount: { value: this.total } }]
+                });
+              },
+              onApprove: (data, actions) => {
+                return actions.order.capture().then(details => {
+                  alert('Pago completado por ' + details.payer.name.given_name);
+                  this.cart = [];
+                });
+              }
+            }).render('#paypal-button-container');
+          }
+        }));
+      });
+    </script>
+  </body>
+</html>
