@@ -1,0 +1,26 @@
+{
+  "es": {
+    "brand": "VELATO",
+    "about": "La Marca",
+    "collection": "Colección",
+    "shop": "Tienda",
+    "contact": "Contacto",
+    "hero_title": "Sutileza con Carácter",
+    "hero_desc": "Moda minimalista y elegante con un toque enigmático. Diseñado para quienes saben mirar más allá.",
+    "shop_button": "Comprar Ahora",
+    "es": "Español",
+    "en": "English"
+  },
+  "en": {
+    "brand": "VELATO",
+    "about": "The Brand",
+    "collection": "Collection",
+    "shop": "Shop",
+    "contact": "Contact",
+    "hero_title": "Subtlety with Character",
+    "hero_desc": "Minimalist and elegant fashion with an enigmatic touch. Designed for those who know how to look beyond.",
+    "shop_button": "Shop Now",
+    "es": "Español",
+    "en": "English"
+  }
+}
