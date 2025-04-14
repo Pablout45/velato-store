@@ -1,63 +1,49 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VELATO - Carrito</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carrito de Compras - VELATO</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/scrollreveal"></script>
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-  <script src="https://www.paypal.com/sdk/js?client-id=AUnfeNYtMMs4yDaTOEFAkjEnIyr3Uaqvc3lrdwJAT4RbMOA5G-lit-3DT03kAzkyY_IN77l_HKDhb_gO&components=buttons"></script>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Outfit', sans-serif; }
   </style>
 </head>
-<body class="bg-white text-gray-900" x-data="cartHandler()">
-
+<body class="bg-white text-gray-900">
   <!-- Header -->
   <header class="flex justify-between items-center p-6 border-b">
-    <a href="index.html">
-      <img src="logo.png" alt="Logo Velato" class="w-28">
-    </a>
+    <h1 class="text-2xl font-semibold tracking-widest">VELATO</h1>
     <nav class="space-x-6 text-sm">
       <a href="index.html" class="hover:underline">Inicio</a>
+      <a href="#shop" class="hover:underline">Tienda</a>
       <a href="carrito.html" class="hover:underline">Carrito</a>
-      <a href="#contact" class="hover:underline">Contacto</a>
     </nav>
   </header>
 
-  <!-- Carrito Section -->
-  <section class="py-16 px-6" x-init="loadCart()">
-    <h3 class="text-2xl font-semibold text-center mb-10">Tu Carrito</h3>
+  <!-- Carrito de Compras -->
+  <section class="py-16 px-6">
+    <h3 class="text-2xl font-semibold text-center mb-10">Carrito de Compras</h3>
 
     <!-- Productos en el carrito -->
-    <div class="max-w-3xl mx-auto">
-      <template x-for="(product, index) in cart" :key="index">
-        <div class="flex justify-between items-center border-b py-4">
-          <div class="flex items-center">
-            <img :src="product.img" alt="Producto" class="w-16 h-16 object-cover rounded mr-4">
-            <div>
-              <h4 class="text-lg font-medium" x-text="product.name"></h4>
-              <p class="text-gray-500 text-sm">Talla: <span x-text="product.size"></span></p>
-              <p class="font-bold text-gray-600" x-text="'€' + product.price.toFixed(2)"></p>
-            </div>
-          </div>
-          <button @click="removeFromCart(index)" class="text-red-500 hover:text-red-700">Eliminar</button>
-        </div>
-      </template>
+    <div id="cartItems" class="mb-8">
+      <!-- Aquí se mostrarán los productos añadidos al carrito -->
     </div>
 
-    <!-- Total -->
-    <div class="flex justify-between items-center mt-8">
-      <p class="font-semibold text-lg">Total:</p>
-      <p class="text-xl font-bold" x-text="'€' + total.toFixed(2)"></p>
-    </div>
+    <!-- Formulario de dirección de envío -->
+    <form action="https://formspree.io/f/meoadano" method="POST" class="max-w-md mx-auto space-y-4">
+      <input type="text" name="name" placeholder="Tu Nombre" class="w-full border p-2 rounded" required />
+      <input type="text" name="address" placeholder="Dirección de Envío" class="w-full border p-2 rounded" required />
+      <input type="text" name="city" placeholder="Ciudad" class="w-full border p-2 rounded" required />
+      <input type="text" name="zipcode" placeholder="Código Postal" class="w-full border p-2 rounded" required />
+      
+      <!-- Detalles del pedido -->
+      <input type="hidden" name="orderDetails" id="orderDetails" />
 
-    <!-- PayPal Button -->
-    <div class="mt-6 text-center">
-      <div id="paypal-button-container"></div>
-    </div>
+      <button class="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition">Confirmar Compra</button>
+    </form>
   </section>
 
   <!-- Footer -->
@@ -65,61 +51,34 @@
     © 2025 VELATO. Todos los derechos reservados.
   </footer>
 
-  <!-- AlpineJS & Funciones -->
+  <!-- Funciones JavaScript -->
   <script>
-    document.addEventListener('alpine:init', () => {
-      Alpine.data('cartHandler', () => ({
-        cart: [],
-        total: 0,
-        loadCart() {
-          const savedCart = JSON.parse(localStorage.getItem('cart')) || [];
-          this.cart = savedCart;
-          this.calculateTotal();
-        },
-        addToCart(product) {
-          const selected = { ...product, size: product.selectedSize || 'M' };
-          this.cart.push(selected);
-          localStorage.setItem('cart', JSON.stringify(this.cart));
-          this.calculateTotal();
-        },
-        removeFromCart(index) {
-          this.cart.splice(index, 1);
-          localStorage.setItem('cart', JSON.stringify(this.cart));
-          this.calculateTotal();
-        },
-        calculateTotal() {
-          this.total = this.cart.reduce((sum, product) => sum + product.price, 0);
-        }
-      }));
+    // Función para obtener los productos del carrito y mostrar en el carrito HTML
+    function displayCart() {
+      const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+      const cartContainer = document.getElementById('cartItems');
+      let orderDetails = '';
+      
+      if (cartItems.length === 0) {
+        cartContainer.innerHTML = '<p>Tu carrito está vacío.</p>';
+      } else {
+        cartItems.forEach(item => {
+          orderDetails += `${item.name} x ${item.quantity} - €${item.price}\n`;
+          cartContainer.innerHTML += `
+            <div class="mb-4 p-4 border-b">
+              <p><strong>${item.name}</strong></p>
+              <p>€${item.price} x ${item.quantity}</p>
+            </div>
+          `;
+        });
+      }
 
-      Alpine.store('paypal', {
-        createOrder(data, actions) {
-          return actions.order.create({
-            purchase_units: [{
-              amount: {
-                value: Alpine.store('cartHandler').total.toFixed(2)
-              }
-            }]
-          });
-        },
-        onApprove(data, actions) {
-          return actions.order.capture().then(function(details) {
-            alert('Pago realizado por ' + details.payer.name.given_name);
-            localStorage.removeItem('cart');
-            window.location.href = "index.html"; // Redirige a la página de inicio
-          });
-        }
-      });
-    });
+      // Asignar los detalles del pedido al campo oculto en el formulario
+      document.getElementById('orderDetails').value = orderDetails;
+    }
 
-    // Inicializar el botón de PayPal
-    document.addEventListener('DOMContentLoaded', () => {
-      paypal.Buttons({
-        createOrder: (data, actions) => Alpine.store('paypal').createOrder(data, actions),
-        onApprove: (data, actions) => Alpine.store('paypal').onApprove(data, actions)
-      }).render('#paypal-button-container');
-    });
+    // Llamar a displayCart al cargar la página
+    window.onload = displayCart;
   </script>
 </body>
 </html>
-
