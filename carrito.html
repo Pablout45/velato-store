@@ -3,106 +3,123 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Carrito de Compras - VELATO</title>
+  <title>VELATO - Carrito</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-  <script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&components=buttons"></script> <!-- Reemplaza con tu Client ID -->
+  <script src="https://unpkg.com/scrollreveal"></script>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <script src="https://www.paypal.com/sdk/js?client-id=AUnfeNYtMMs4yDaTOEFAkjEnIyr3Uaqvc3lrdwJAT4RbMOA5G-lit-3DT03kAzkyY_IN77l_HKDhb_gO&components=buttons"></script>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Outfit', sans-serif; }
   </style>
 </head>
 <body class="bg-white text-gray-900" x-data="cartHandler()">
+
   <!-- Header -->
   <header class="flex justify-between items-center p-6 border-b">
     <a href="index.html">
-      <img src="logo.png" alt="Logo Velato" class="w-28 mb-4 cursor-pointer">
+      <img src="logo.png" alt="Logo Velato" class="w-28">
     </a>
     <nav class="space-x-6 text-sm">
       <a href="index.html" class="hover:underline">Inicio</a>
-      <a href="shop.html" class="hover:underline">Tienda</a>
       <a href="carrito.html" class="hover:underline">Carrito</a>
       <a href="#contact" class="hover:underline">Contacto</a>
     </nav>
   </header>
 
-  <!-- Carrito de Compras -->
-  <section class="py-16 px-6" x-init="fetchCart()">
+  <!-- Carrito Section -->
+  <section class="py-16 px-6" x-init="loadCart()">
     <h3 class="text-2xl font-semibold text-center mb-10">Tu Carrito</h3>
 
-    <!-- Lista de Productos -->
-    <div class="mb-8">
-      <template x-for="(item, index) in cart" :key="index">
-        <div class="flex justify-between items-center mb-4 border-b pb-4">
+    <!-- Productos en el carrito -->
+    <div class="max-w-3xl mx-auto">
+      <template x-for="(product, index) in cart" :key="index">
+        <div class="flex justify-between items-center border-b py-4">
           <div class="flex items-center">
-            <img :src="item.img" alt="Producto" class="w-16 h-16 object-cover mr-4">
+            <img :src="product.img" alt="Producto" class="w-16 h-16 object-cover rounded mr-4">
             <div>
-              <h4 class="font-medium" x-text="item.name"></h4>
-              <p class="text-sm text-gray-600">Talla: <span x-text="item.size"></span></p>
-              <p class="font-semibold">€<span x-text="item.price"></span></p>
+              <h4 class="text-lg font-medium" x-text="product.name"></h4>
+              <p class="text-gray-500 text-sm">Talla: <span x-text="product.size"></span></p>
+              <p class="font-bold text-gray-600" x-text="'€' + product.price.toFixed(2)"></p>
             </div>
           </div>
-          <button @click="removeFromCart(index)" class="text-red-600">Eliminar</button>
+          <button @click="removeFromCart(index)" class="text-red-500 hover:text-red-700">Eliminar</button>
         </div>
       </template>
     </div>
 
     <!-- Total -->
-    <div class="text-right mb-8">
-      <h4 class="text-xl font-semibold">Total: €<span x-text="totalPrice.toFixed(2)"></span></h4>
+    <div class="flex justify-between items-center mt-8">
+      <p class="font-semibold text-lg">Total:</p>
+      <p class="text-xl font-bold" x-text="'€' + total.toFixed(2)"></p>
     </div>
 
     <!-- PayPal Button -->
-    <div id="paypal-button-container"></div>
+    <div class="mt-6 text-center">
+      <div id="paypal-button-container"></div>
+    </div>
+  </section>
 
-    <script>
-      document.addEventListener('alpine:init', () => {
-        Alpine.data('cartHandler', () => ({
-          cart: JSON.parse(localStorage.getItem('cart')) || [],
-          removeFromCart(index) {
-            this.cart.splice(index, 1);
-            localStorage.setItem('cart', JSON.stringify(this.cart));
-          },
-          get totalPrice() {
-            return this.cart.reduce((acc, item) => acc + item.price, 0);
-          },
-          async fetchCart() {
-            if (this.cart.length === 0) return;
-            // Cargar los detalles del carrito desde el localStorage
-          }
-        }));
-      });
+  <!-- Footer -->
+  <footer class="text-center py-6 text-sm text-gray-500">
+    © 2025 VELATO. Todos los derechos reservados.
+  </footer>
 
-      // Configurar el botón de PayPal
-      paypal.Buttons({
-        createOrder: (data, actions) => {
+  <!-- AlpineJS & Funciones -->
+  <script>
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('cartHandler', () => ({
+        cart: [],
+        total: 0,
+        loadCart() {
+          const savedCart = JSON.parse(localStorage.getItem('cart')) || [];
+          this.cart = savedCart;
+          this.calculateTotal();
+        },
+        addToCart(product) {
+          const selected = { ...product, size: product.selectedSize || 'M' };
+          this.cart.push(selected);
+          localStorage.setItem('cart', JSON.stringify(this.cart));
+          this.calculateTotal();
+        },
+        removeFromCart(index) {
+          this.cart.splice(index, 1);
+          localStorage.setItem('cart', JSON.stringify(this.cart));
+          this.calculateTotal();
+        },
+        calculateTotal() {
+          this.total = this.cart.reduce((sum, product) => sum + product.price, 0);
+        }
+      }));
+
+      Alpine.store('paypal', {
+        createOrder(data, actions) {
           return actions.order.create({
             purchase_units: [{
               amount: {
-                value: document.querySelector('[x-text="totalPrice"]').innerText
+                value: Alpine.store('cartHandler').total.toFixed(2)
               }
             }]
           });
         },
-        onApprove: async (data, actions) => {
-          const order = await actions.order.capture();
-          console.log('Pago completado', order);
-          // Aquí puedes hacer una solicitud a tu servidor para confirmar el pedido
-          alert('¡Gracias por tu compra! Tu pedido ha sido procesado.');
-          // Puedes redirigir a una página de confirmación o realizar alguna acción
-          window.location.href = 'confirmacion.html'; // Redirigir a una página de confirmación
-        },
-        onError: (err) => {
-          console.log('Error en el pago', err);
-          alert('Hubo un error procesando el pago. Inténtalo nuevamente.');
+        onApprove(data, actions) {
+          return actions.order.capture().then(function(details) {
+            alert('Pago realizado por ' + details.payer.name.given_name);
+            localStorage.removeItem('cart');
+            window.location.href = "index.html"; // Redirige a la página de inicio
+          });
         }
-      }).render('#paypal-button-container'); // Renderizar el botón en el contenedor
-    </script>
+      });
+    });
 
-  </section>
-
-  <footer class="text-center py-6 text-sm text-gray-500">
-    © 2025 VELATO. Todos los derechos reservados.
-  </footer>
+    // Inicializar el botón de PayPal
+    document.addEventListener('DOMContentLoaded', () => {
+      paypal.Buttons({
+        createOrder: (data, actions) => Alpine.store('paypal').createOrder(data, actions),
+        onApprove: (data, actions) => Alpine.store('paypal').onApprove(data, actions)
+      }).render('#paypal-button-container');
+    });
+  </script>
 </body>
 </html>
+
