@@ -2,51 +2,74 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Carrito - VELATO</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carrito de Compras - VELATO</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Outfit', sans-serif; }
+  </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
-  <div class="max-w-3xl mx-auto p-6">
-    <h1 class="text-3xl font-bold mb-6 text-center">Carrito de Compras</h1>
+<body class="bg-white text-gray-900" x-data="cartHandler()">
+  <!-- Header -->
+  <header class="flex justify-between items-center p-6 border-b">
+    <h1 class="text-2xl font-semibold tracking-widest">VELATO</h1>
+    <nav class="space-x-6 text-sm">
+      <a href="tienda.html" class="hover:underline">Tienda</a>
+      <a href="carrito.html" class="hover:underline">Carrito</a>
+      <a href="#contact" class="hover:underline">Contacto</a>
+    </nav>
+  </header>
 
-    <div id="carrito" class="bg-white p-4 rounded shadow mb-8">
-      <h2 class="text-xl font-semibold mb-4">Resumen de Productos</h2>
-      <ul id="lista-carrito" class="space-y-2"></ul>
-      <p class="mt-4 font-bold">Total: €<span id="total"></span></p>
+  <!-- Carrito Section -->
+  <section class="py-16 px-6" x-init="loadCart()">
+    <h3 class="text-2xl font-semibold text-center mb-10">Carrito de Compras</h3>
+
+    <!-- Lista de Productos -->
+    <div class="space-y-8">
+      <template x-for="(item, index) in cart" :key="index">
+        <div class="flex justify-between items-center border-b pb-4">
+          <div class="flex items-center">
+            <img :src="item.img" alt="Producto" class="w-16 h-16 object-cover rounded mr-4">
+            <div>
+              <h4 class="font-medium" x-text="item.name"></h4>
+              <p class="text-sm">Tamaño: <span x-text="item.size"></span></p>
+            </div>
+          </div>
+          <p class="font-semibold">€<span x-text="item.price.toFixed(2)"></span></p>
+        </div>
+      </template>
     </div>
 
-    <form id="formulario-envio" action="https://formspree.io/f/meoadano" method="POST" class="bg-white p-6 rounded shadow space-y-4">
-      <h2 class="text-xl font-semibold">Datos de Envío</h2>
-      <input type="text" name="nombre" placeholder="Nombre completo" required class="w-full border p-2 rounded">
-      <input type="email" name="email" placeholder="Correo electrónico" required class="w-full border p-2 rounded">
-      <input type="text" name="direccion" placeholder="Dirección" required class="w-full border p-2 rounded">
-      <input type="text" name="ciudad" placeholder="Ciudad" required class="w-full border p-2 rounded">
-      <input type="text" name="codigo_postal" placeholder="Código Postal" required class="w-full border p-2 rounded">
-      <input type="hidden" name="pedido" id="pedidoInput">
-      <button type="submit" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">Finalizar Pedido</button>
+    <!-- Formulario de Envío -->
+    <form action="https://formspree.io/f/meoadano" method="POST" class="space-y-4 mt-8">
+      <h4 class="text-lg font-semibold">Datos de Envío</h4>
+      <input type="text" name="nombre" placeholder="Nombre" class="w-full border p-2 rounded" required />
+      <input type="email" name="email" placeholder="Correo Electrónico" class="w-full border p-2 rounded" required />
+      <input type="text" name="direccion" placeholder="Dirección" class="w-full border p-2 rounded" required />
+      <input type="text" name="ciudad" placeholder="Ciudad" class="w-full border p-2 rounded" required />
+      <input type="text" name="codigo_postal" placeholder="Código Postal" class="w-full border p-2 rounded" required />
+      <button type="submit" class="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition">Pagar</button>
     </form>
-  </div>
+  </section>
 
+  <!-- Footer -->
+  <footer class="text-center py-6 text-sm text-gray-500">
+    © 2025 VELATO. Todos los derechos reservados.
+  </footer>
+
+  <!-- AlpineJS & Funciones -->
   <script>
-    const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
-    const lista = document.getElementById("lista-carrito");
-    const total = document.getElementById("total");
-    const pedidoInput = document.getElementById("pedidoInput");
-
-    let totalPrecio = 0;
-    let resumen = "";
-
-    carrito.forEach(producto => {
-      const item = document.createElement("li");
-      item.textContent = `${producto.name} - €${producto.price.toFixed(2)}`;
-      lista.appendChild(item);
-      totalPrecio += producto.price;
-      resumen += `${producto.name} (€${producto.price.toFixed(2)})\n`;
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('cartHandler', () => ({
+        cart: [],
+        loadCart() {
+          const savedCart = JSON.parse(localStorage.getItem('cart')) || [];
+          this.cart = savedCart;
+        },
+      }));
     });
-
-    total.textContent = totalPrecio.toFixed(2);
-    pedidoInput.value = resumen + `\nTotal: €${totalPrecio.toFixed(2)}`;
   </script>
 </body>
 </html>
