@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Camiseta Minimal Blanca",
+    "price": 45.00,
+    "img": "https://via.placeholder.com/300x400?text=Camiseta+Minimal"
+  },
+  {
+    "name": "Camisa Oversize Negra",
+    "price": 65.00,
+    "img": "https://via.placeholder.com/300x400?text=Camisa+Oversize"
+  },
+  {
+    "name": "Chaqueta Velato Premium",
+    "price": 120.00,
+    "img": "https://via.placeholder.com/300x400?text=Chaqueta+Velato"
+  },
+  {
+    "name": "Sudadera Logo Sutil",
+    "price": 59.99,
+    "img": "https://via.placeholder.com/300x400?text=Sudadera+Logo"
+  },
+  {
+    "name": "Pantalón Relax Fit Gris",
+    "price": 70.00,
+    "img": "https://via.placeholder.com/300x400?text=Pantalon+Relax"
+  },
+  {
+    "name": "Gorra Bordada Velato",
+    "price": 30.00,
+    "img": "https://via.placeholder.com/300x400?text=Gorra+Bordada"
+  }
+]
