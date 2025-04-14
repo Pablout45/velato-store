@@ -3,96 +3,108 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Carrito - VELATO</title>
+  <title>Carrito de Compras - VELATO</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Outfit', sans-serif; }
+  </style>
 </head>
-<body class="bg-white text-gray-900">
-
+<body class="bg-white text-gray-900" x-data="cartHandler()">
   <!-- Header -->
   <header class="flex justify-between items-center p-6 border-b">
-    <img src="logo.png" alt="Logo VELATO" class="w-28"> <!-- Asegúrate de tener tu logo en este nombre y ruta -->
-    <h1 class="text-2xl font-semibold tracking-widest">VELATO</h1>
+    <a href="index.html">
+      <img src="logo.png" alt="Logo Velato" class="w-28 mb-4 cursor-pointer">
+    </a>
+    <nav class="space-x-6 text-sm">
+      <a href="#about" class="hover:underline">La Marca</a>
+      <a href="shop.html" class="hover:underline">Tienda</a>
+      <a href="carrito.html" class="hover:underline">Carrito</a>
+      <a href="#contact" class="hover:underline">Contacto</a>
+    </nav>
   </header>
 
-  <main class="py-16 px-6">
-    <h2 class="text-3xl font-semibold text-center mb-8">Tu Carrito de Compras</h2>
-    
-    <!-- Carrito de compras -->
-    <div id="cartItems" class="space-y-6">
-      <!-- Aquí se agregarán los productos del carrito con JavaScript -->
-    </div>
-    
-    <!-- Formulario de datos para el envío -->
-    <div class="mt-12 bg-gray-50 p-6 rounded-lg shadow-lg">
-      <h3 class="text-2xl font-semibold mb-4">Detalles de Envío</h3>
-      <form id="shippingForm" class="space-y-4">
-        <input type="text" id="name" placeholder="Nombre Completo" class="w-full border p-2 rounded" required />
-        <input type="email" id="email" placeholder="Email" class="w-full border p-2 rounded" required />
-        <input type="text" id="address" placeholder="Dirección" class="w-full border p-2 rounded" required />
-        <input type="text" id="city" placeholder="Ciudad" class="w-full border p-2 rounded" required />
-        <input type="text" id="zip" placeholder="Código Postal" class="w-full border p-2 rounded" required />
-        <button type="submit" id="checkoutButton" class="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition w-full">Finalizar Compra</button>
-      </form>
-    </div>
-  </main>
+  <!-- Carrito de Compras -->
+  <section class="py-16 px-6" x-init="fetchCart()">
+    <h3 class="text-2xl font-semibold text-center mb-10">Tu Carrito</h3>
 
-  <footer class="text-center py-6 text-sm text-gray-500">
-    © 2025 VELATO. Todos los derechos reservados.
-  </footer>
+    <!-- Lista de Productos -->
+    <div class="mb-8">
+      <template x-for="(item, index) in cart" :key="index">
+        <div class="border p-4 rounded-lg mb-4 flex justify-between items-center">
+          <div>
+            <img :src="item.img" alt="Producto" class="w-16 h-16 rounded">
+            <h4 class="font-medium" x-text="item.name"></h4>
+            <p class="text-sm">Tamaño: <span x-text="item.size"></span></p>
+          </div>
+          <div>
+            <p class="font-semibold" x-text="'€ ' + item.price.toFixed(2)"></p>
+          </div>
+        </div>
+      </template>
+    </div>
 
-  <!-- JavaScript -->
+    <!-- Total y Formulario de Pago -->
+    <div class="flex justify-between items-center mb-6">
+      <p class="text-lg font-semibold">Total: €<span x-text="totalPrice().toFixed(2)"></span></p>
+    </div>
+
+    <!-- Formulario de Pago -->
+    <h4 class="text-xl font-semibold text-center mb-4">Datos de Envío y Pago</h4>
+    <form class="max-w-lg mx-auto" @submit.prevent="submitOrder">
+      <div class="space-y-4">
+        <input type="text" placeholder="Nombre Completo" class="w-full border p-2 rounded" required>
+        <input type="email" placeholder="Correo Electrónico" class="w-full border p-2 rounded" required>
+        <input type="text" placeholder="Dirección de Envío" class="w-full border p-2 rounded" required>
+        <input type="tel" placeholder="Teléfono" class="w-full border p-2 rounded" required>
+        <button type="submit" class="w-full bg-black text-white px-4 py-2 rounded hover:bg-gray-800">Realizar Pedido</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- AlpineJS & Funciones -->
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Cargar productos desde el carrito en el almacenamiento local
-      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('cartHandler', () => ({
+        cart: [],
+        fetchCart() {
+          const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
+          this.cart = storedCart;
+        },
+        totalPrice() {
+          return this.cart.reduce((sum, item) => sum + item.price, 0);
+        },
+        submitOrder() {
+          const formData = new FormData(event.target);
+          const orderDetails = {
+            items: this.cart,
+            customerInfo: {
+              name: formData.get('name'),
+              email: formData.get('email'),
+              address: formData.get('address'),
+              phone: formData.get('phone'),
+            },
+            total: this.totalPrice(),
+          };
 
-      function renderCartItems() {
-        const cartItemsContainer = document.getElementById('cartItems');
-        cartItemsContainer.innerHTML = ''; // Limpiar los productos del carrito
-        if (cart.length === 0) {
-          cartItemsContainer.innerHTML = '<p class="text-center text-gray-500">Tu carrito está vacío.</p>';
-          return;
+          // Enviar datos del pedido por correo (aquí puedes integrarlo con algún servicio como Formspree)
+          fetch('https://formspree.io/f/meoadano', {
+            method: 'POST',
+            body: new URLSearchParams(orderDetails)
+          })
+          .then(response => response.json())
+          .then(() => {
+            alert('Pedido realizado con éxito');
+            localStorage.removeItem('cart');
+            window.location.href = 'index.html'; // Redirigir a la página principal
+          })
+          .catch(error => {
+            alert('Hubo un error al procesar tu pedido');
+          });
         }
-        cart.forEach(item => {
-          const itemElement = document.createElement('div');
-          itemElement.classList.add('flex', 'justify-between', 'items-center', 'border-b', 'pb-4');
-          itemElement.innerHTML = `
-            <div>
-              <img src="${item.img}" alt="${item.name}" class="w-20 h-20 object-cover inline-block mr-4">
-              <span class="font-medium">${item.name}</span><br>
-              <span class="text-sm text-gray-500">Talla: ${item.size}</span>
-            </div>
-            <div class="text-lg font-semibold">€${item.price.toFixed(2)}</div>
-          `;
-          cartItemsContainer.appendChild(itemElement);
-        });
-      }
-
-      renderCartItems();
-
-      // Formulario de envío y checkout
-      const checkoutButton = document.getElementById('checkoutButton');
-      checkoutButton.addEventListener('click', function(event) {
-        event.preventDefault();
-
-        const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
-        const address = document.getElementById('address').value;
-        const city = document.getElementById('city').value;
-        const zip = document.getElementById('zip').value;
-
-        if (name && email && address && city && zip) {
-          // Simulación de proceso de pago exitoso
-          alert('Gracias por tu compra. Se ha procesado tu pago y tu pedido será enviado pronto.');
-
-          // Redirigir a la página de pago completado
-          window.location.href = 'pago-completado.html';
-        } else {
-          alert('Por favor, completa todos los campos.');
-        }
-      });
+      }));
     });
   </script>
 </body>
 </html>
-
