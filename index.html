@@ -1,158 +1,137 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>VELATO</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/scrollreveal"></script>
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-    <script src="https://www.paypal.com/sdk/js?client-id=AUnfeNYtMMs4yDaTOEFAkjEnIyr3Uaqvc3lrdwJAT4RbMOA5G-lit-3DT03kAzkyY_IN77l_HKDhb_gO&currency=EUR"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600&display=swap" rel="stylesheet">
-    <style>
-      body { font-family: 'Outfit', sans-serif; }
-    </style>
-  </head>
-  <body class="bg-white text-gray-900" x-data="cartHandler()">
-    <!-- Header -->
-    <header class="flex justify-between items-center p-6 border-b">
-      <h1 class="text-2xl font-semibold tracking-widest">VELATO</h1>
-      <nav class="space-x-6 text-sm">
-        <a href="#about" class="hover:underline">La Marca</a>
-        <a href="#products" class="hover:underline">Colección</a>
-        <a href="#shop" class="hover:underline">Tienda</a>
-        <!-- Pestaña de Carrito -->
-        <a href="carrito.html" class="hover:underline">Carrito</a>
-        <a href="#contact" class="hover:underline">Contacto</a>
-      </nav>
-    </header>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VELATO</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/scrollreveal"></script>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Outfit', sans-serif; }
+  </style>
+</head>
+<body class="bg-white text-gray-900" x-data="cartHandler()">
+  <!-- Header -->
+  <header class="flex justify-between items-center p-6 border-b">
+    <h1 class="text-2xl font-semibold tracking-widest">VELATO</h1>
+    <nav class="space-x-6 text-sm">
+      <a href="#about" class="hover:underline">La Marca</a>
+      <a href="#shop" class="hover:underline">Tienda</a>
+      <a href="carrito.html" class="hover:underline">Carrito</a>
+      <a href="#contact" class="hover:underline">Contacto</a>
+    </nav>
+  </header>
 
-    <!-- Hero Section -->
-    <section class="h-[90vh] flex flex-col items-center justify-center text-center px-4">
-      <img src="logo.png" alt="Logo Velato" class="w-28 mb-4 animate-fade-in">
-      <h2 class="text-4xl font-semibold mb-2" data-translate="hero_title">Sutileza con Carácter</h2>
-      <p class="text-gray-600 max-w-md mb-6" data-translate="hero_desc">
-        Moda minimalista y elegante con un toque enigmático. Diseñado para quienes saben mirar más allá.
-      </p>
-      <!-- El botón redirige a la página del carrito para proceder con el pedido -->
-      <a href="carrito.html" class="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition" data-translate="shop_button">
-        Comprar Ahora
-      </a>
-    </section>
+  <!-- Hero Section -->
+  <section class="h-[90vh] flex flex-col items-center justify-center text-center px-4">
+    <img src="logo.png" alt="Logo Velato" class="w-28 mb-4 animate-fade-in">
+    <h2 class="text-4xl font-semibold mb-2">Sutileza con Carácter</h2>
+    <p class="text-gray-600 max-w-md mb-6">Moda minimalista y elegante con un toque enigmático. Diseñado para quienes saben mirar más allá.</p>
+    <a href="#shop" class="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition">Comprar Ahora</a>
+  </section>
 
-    <!-- About Section -->
-    <section id="about" class="py-16 bg-gray-50 px-6 text-center">
-      <h3 class="text-2xl font-semibold mb-4">Nuestra Filosofía</h3>
-      <p class="max-w-2xl mx-auto text-gray-700">
-        VELATO nace de la idea de que el verdadero estilo no grita, sino que susurra.
-        Cada prenda está diseñada para ofrecer calidad, discreción y un carácter único que se revela en los detalles.
-      </p>
-    </section>
+  <!-- About Section -->
+  <section id="about" class="py-16 bg-gray-50 px-6 text-center">
+    <h3 class="text-2xl font-semibold mb-4">Nuestra Filosofía</h3>
+    <p class="max-w-2xl mx-auto text-gray-700">VELATO nace de la idea de que el verdadero estilo no grita, sino que susurra. Cada prenda está diseñada para ofrecer calidad, discreción y un carácter único que se revela en los detalles.</p>
+  </section>
 
-    <!-- Product Highlights (Colección Destacada) -->
-    <section id="products" class="py-16 px-6">
-      <h3 class="text-2xl font-semibold text-center mb-10">Colección Destacada</h3>
-      <div class="grid md:grid-cols-3 gap-8">
-        <!-- Muestra solo los 3 primeros productos como ejemplo -->
-        <template x-for="product in products.slice(0, 3)" :key="product.name">
-          <div class="border rounded-xl p-4 text-center hover:shadow-xl transition">
-            <img :src="product.img" alt="Producto" class="rounded mb-4 mx-auto">
-            <h4 class="text-lg font-medium" x-text="product.name"></h4>
-            <p class="text-gray-500 text-sm">Diseño exclusivo, alta calidad</p>
-            <p class="font-bold mb-2">€<span x-text="product.price.toFixed(2)"></span></p>
-            <button @click="addToCart(product)" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">
-              Añadir al carrito
-            </button>
-          </div>
-        </template>
+  <!-- Shop Section -->
+  <section id="shop" class="py-16 px-6" x-init="fetchProducts()">
+    <h3 class="text-2xl font-semibold text-center mb-10">Tienda Online</h3>
+
+    <!-- Buscador y Filtro -->
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+      <div>
+        <label for="sort" class="mr-2 font-medium">Ordenar por:</label>
+        <select id="sort" x-model="sortOrder" class="border p-2 rounded">
+          <option value="default">Por defecto</option>
+          <option value="priceAsc">Precio: Menor a Mayor</option>
+          <option value="priceDesc">Precio: Mayor a Menor</option>
+          <option value="nameAsc">Nombre: A-Z</option>
+          <option value="nameDesc">Nombre: Z-A</option>
+        </select>
       </div>
-    </section>
+      <input type="text" x-model="searchQuery" placeholder="Buscar producto..." class="border p-2 rounded w-full md:w-64">
+    </div>
 
-    <!-- Shop Section (opcional) -->
-    <section id="shop" class="py-16 px-6">
-      <h3 class="text-2xl font-semibold text-center mb-10">Tienda Online</h3>
-      <!-- Aquí se podría replicar otra vista de la tienda o catálogo -->
-    </section>
+    <!-- Productos -->
+    <div class="grid md:grid-cols-3 gap-8">
+      <template x-for="(product, index) in filteredProducts" :key="index">
+        <div class="border rounded-xl p-4 text-center hover:shadow-xl transition">
+          <img :src="product.img" alt="Producto" class="rounded mb-4 mx-auto">
+          <h4 class="text-lg font-medium" x-text="product.name"></h4>
+          <p class="text-gray-500 text-sm">Diseño exclusivo, alta calidad</p>
+          <p class="font-bold mb-2">€<span x-text="product.price.toFixed(2)"></span></p>
+          <label for="talla" class="block text-sm font-medium mb-1">Talla:</label>
+          <select x-model="product.selectedSize" class="border rounded p-1 mb-3">
+            <option value="S">S</option>
+            <option value="M">M</option>
+            <option value="L">L</option>
+            <option value="XL">XL</option>
+          </select>
+          <button @click="addToCart(product)" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">Añadir al carrito</button>
+        </div>
+      </template>
+    </div>
+  </section>
 
-    <!-- Contact Section -->
-    <section id="contact" class="py-16 text-center px-6">
-      <h3 class="text-2xl font-semibold mb-4">Contacto</h3>
-      <p class="text-gray-600 mb-6">¿Quieres colaborar o hacer una consulta? Escríbenos.</p>
-      <form class="max-w-md mx-auto space-y-4">
-        <input type="text" placeholder="Nombre" class="w-full border p-2 rounded" required />
-        <input type="email" placeholder="Email" class="w-full border p-2 rounded" required />
-        <textarea placeholder="Mensaje" class="w-full border p-2 rounded h-32" required></textarea>
-        <button class="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition">
-          Enviar
-        </button>
-      </form>
-    </section>
+  <!-- Contact Section -->
+  <section id="contact" class="py-16 text-center px-6">
+    <h3 class="text-2xl font-semibold mb-4">Contacto</h3>
+    <p class="text-gray-600 mb-6">¿Quieres colaborar o hacer una consulta? Escríbenos.</p>
+    <form action="https://formspree.io/f/meoadano" method="POST" class="max-w-md mx-auto space-y-4">
+      <input type="text" name="nombre" placeholder="Nombre" class="w-full border p-2 rounded" required />
+      <input type="email" name="email" placeholder="Email" class="w-full border p-2 rounded" required />
+      <textarea name="mensaje" placeholder="Mensaje" class="w-full border p-2 rounded h-32" required></textarea>
+      <button class="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition">Enviar</button>
+    </form>
+  </section>
 
-    <!-- Footer -->
-    <footer class="text-center py-6 text-sm text-gray-500">
-      © 2025 VELATO. Todos los derechos reservados.
-    </footer>
+  <!-- Footer -->
+  <footer class="text-center py-6 text-sm text-gray-500">
+    © 2025 VELATO. Todos los derechos reservados.
+  </footer>
 
-    <!-- ScrollReveal y Alpine.js -->
-    <script>
-      ScrollReveal().reveal('section', { duration: 1000, distance: '50px', origin: 'bottom', reset: false });
-
-      document.addEventListener('alpine:init', () => {
-        Alpine.data('cartHandler', () => ({
-          // Cargar carrito desde localStorage al iniciar la app
-          cart: JSON.parse(localStorage.getItem("carrito")) || [],
-          products: [],
-          sortOrder: 'default',
-          // Guarda el carrito en localStorage cada vez que se modifique
-          saveCart() {
-            localStorage.setItem("carrito", JSON.stringify(this.cart));
-          },
-          addToCart(product) {
-            this.cart.push(product);
-            this.saveCart();
-            alert(product.name + " ha sido añadido al carrito");
-          },
-          removeFromCart(index) {
-            this.cart.splice(index, 1);
-            this.saveCart();
-          },
-          get total() {
-            return this.cart.reduce((sum, item) => sum + item.price, 0).toFixed(2);
-          },
-          get sortedProducts() {
-            return [...this.products].sort((a, b) => {
-              switch (this.sortOrder) {
-                case 'priceAsc': return a.price - b.price;
-                case 'priceDesc': return b.price - a.price;
-                case 'nameAsc': return a.name.localeCompare(b.name);
-                case 'nameDesc': return b.name.localeCompare(a.name);
-                default: return 0;
-              }
+  <!-- AlpineJS & Funciones -->
+  <script>
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('cartHandler', () => ({
+        cart: [],
+        products: [],
+        sortOrder: 'default',
+        searchQuery: '',
+        addToCart(product) {
+          const selected = { ...product, size: product.selectedSize || 'M' };
+          this.cart.push(selected);
+          localStorage.setItem('cart', JSON.stringify(this.cart));
+          window.location.href = 'carrito.html';
+        },
+        fetchProducts() {
+          fetch('productos.json')
+            .then(res => res.json())
+            .then(data => {
+              this.products = data.map(p => ({ ...p, selectedSize: 'M' }));
             });
-          },
-          async fetchProducts() {
-            const res = await fetch('productos.json');
-            this.products = await res.json();
-          },
-          init() {
-            this.fetchProducts();
-            paypal.Buttons({
-              createOrder: (data, actions) => {
-                return actions.order.create({
-                  purchase_units: [{ amount: { value: this.total } }]
-                });
-              },
-              onApprove: (data, actions) => {
-                return actions.order.capture().then(details => {
-                  alert('Pago completado por ' + details.payer.name.given_name);
-                  this.cart = [];
-                  this.saveCart();
-                });
-              }
-            }).render('#paypal-button-container');
-          }
-        }));
-      });
-    </script>
-  </body>
+        },
+        get sortedProducts() {
+          return [...this.products].sort((a, b) => {
+            switch (this.sortOrder) {
+              case 'priceAsc': return a.price - b.price;
+              case 'priceDesc': return b.price - a.price;
+              case 'nameAsc': return a.name.localeCompare(b.name);
+              case 'nameDesc': return b.name.localeCompare(a.name);
+              default: return 0;
+            }
+          });
+        },
+        get filteredProducts() {
+          return this.sortedProducts.filter(p => p.name.toLowerCase().includes(this.searchQuery.toLowerCase()));
+        },
+      }));
+    });
+  </script>
+</body>
 </html>
