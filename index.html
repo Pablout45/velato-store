@@ -83,9 +83,10 @@
           // Añadir el producto al carrito
           const selected = { ...product, size: product.selectedSize || 'M' };
           this.cart.push(selected);
-          // Guardamos el carrito en localStorage
+          // Guardamos el carrito en localStorage sin redirigir a otra página
           localStorage.setItem('cart', JSON.stringify(this.cart));
-          alert('Producto añadido al carrito'); // Mensaje de confirmación
+          // Alerta de producto añadido al carrito
+          alert('Producto añadido al carrito');
         },
         fetchProducts() {
           fetch('productos.json') // Asegúrate de tener un archivo productos.json
