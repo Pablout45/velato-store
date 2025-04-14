@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VELATO</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/scrollreveal"></script>
-  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Outfit', sans-serif; }
@@ -18,7 +17,7 @@
     <h1 class="text-2xl font-semibold tracking-widest">VELATO</h1>
     <nav class="space-x-6 text-sm">
       <a href="#about" class="hover:underline">La Marca</a>
-      <a href="tienda.html" class="hover:underline">Tienda</a>
+      <a href="#shop" class="hover:underline">Tienda</a>
       <a href="carrito.html" class="hover:underline">Carrito</a>
       <a href="#contact" class="hover:underline">Contacto</a>
     </nav>
@@ -29,13 +28,7 @@
     <img src="logo.png" alt="Logo Velato" class="w-28 mb-4 animate-fade-in">
     <h2 class="text-4xl font-semibold mb-2">Sutileza con Carácter</h2>
     <p class="text-gray-600 max-w-md mb-6">Moda minimalista y elegante con un toque enigmático. Diseñado para quienes saben mirar más allá.</p>
-    <a href="tienda.html" class="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition">Comprar Ahora</a>
-  </section>
-
-  <!-- About Section -->
-  <section id="about" class="py-16 bg-gray-50 px-6 text-center">
-    <h3 class="text-2xl font-semibold mb-4">Nuestra Filosofía</h3>
-    <p class="max-w-2xl mx-auto text-gray-700">VELATO nace de la idea de que el verdadero estilo no grita, sino que susurra. Cada prenda está diseñada para ofrecer calidad, discreción y un carácter único que se revela en los detalles.</p>
+    <a href="#shop" class="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition">Comprar Ahora</a>
   </section>
 
   <!-- Shop Section -->
@@ -78,23 +71,6 @@
     </div>
   </section>
 
-  <!-- Contact Section -->
-  <section id="contact" class="py-16 text-center px-6">
-    <h3 class="text-2xl font-semibold mb-4">Contacto</h3>
-    <p class="text-gray-600 mb-6">¿Quieres colaborar o hacer una consulta? Escríbenos.</p>
-    <form action="https://formspree.io/f/meoadano" method="POST" class="max-w-md mx-auto space-y-4">
-      <input type="text" name="nombre" placeholder="Nombre" class="w-full border p-2 rounded" required />
-      <input type="email" name="email" placeholder="Email" class="w-full border p-2 rounded" required />
-      <textarea name="mensaje" placeholder="Mensaje" class="w-full border p-2 rounded h-32" required></textarea>
-      <button class="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition">Enviar</button>
-    </form>
-  </section>
-
-  <!-- Footer -->
-  <footer class="text-center py-6 text-sm text-gray-500">
-    © 2025 VELATO. Todos los derechos reservados.
-  </footer>
-
   <!-- AlpineJS & Funciones -->
   <script>
     document.addEventListener('alpine:init', () => {
@@ -106,11 +82,11 @@
         addToCart(product) {
           const selected = { ...product, size: product.selectedSize || 'M' };
           this.cart.push(selected);
-          localStorage.setItem('cart', JSON.stringify(this.cart));
-          window.location.href = 'carrito.html';
+          localStorage.setItem('cart', JSON.stringify(this.cart)); // Guardar el carrito en localStorage
+          window.location.href = 'carrito.html'; // Redirigir al carrito
         },
         fetchProducts() {
-          fetch('productos.json')
+          fetch('productos.json') // Asumimos que tienes productos.json con la lista de productos
             .then(res => res.json())
             .then(data => {
               this.products = data.map(p => ({ ...p, selectedSize: 'M' }));
@@ -135,3 +111,4 @@
   </script>
 </body>
 </html>
+
