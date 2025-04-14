@@ -21,19 +21,13 @@
         <a href="#about" class="hover:underline">La Marca</a>
         <a href="#products" class="hover:underline">Colección</a>
         <a href="#shop" class="hover:underline">Tienda</a>
+        <a href="#store" class="hover:underline">Productos</a>
         <a href="#contact" class="hover:underline">Contacto</a>
       </nav>
-      <!-- Icono del carrito -->
-      <button @click="toggleCart()" class="relative text-xl p-2">
-        🛒
-        <span x-show="cart.length > 0" class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1">
-          <span x-text="cart.length"></span>
-        </span>
-      </button>
     </header>
 
-    <!-- Carrito emergente -->
-    <div class="fixed top-6 right-6 bg-white border rounded-lg shadow-lg p-4 w-72 z-50" x-show="isCartOpen" x-transition>
+    <!-- Carrito -->
+    <div id="cart" class="fixed top-6 right-6 bg-white border rounded-lg shadow-lg p-4 w-72 z-50" x-show="cart.length > 0" x-transition>
       <h2 class="text-lg font-semibold mb-2">🛒 Tu carrito</h2>
       <template x-for="(item, index) in cart" :key="index">
         <div class="flex justify-between items-center mb-2">
@@ -51,9 +45,9 @@
     <!-- Hero Section -->
     <section class="h-[90vh] flex flex-col items-center justify-center text-center px-4">
       <img src="logo.png" alt="Logo Velato" class="w-28 mb-4 animate-fade-in">
-      <h2 class="text-4xl font-semibold mb-2">Sutileza con Carácter</h2>
-      <p class="text-gray-600 max-w-md mb-6">Moda minimalista y elegante con un toque enigmático. Diseñado para quienes saben mirar más allá.</p>
-      <a href="#shop" class="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition">Comprar Ahora</a>
+      <h2 class="text-4xl font-semibold mb-2" data-translate="hero_title">Sutileza con Carácter</h2>
+      <p class="text-gray-600 max-w-md mb-6" data-translate="hero_desc">Moda minimalista y elegante con un toque enigmático. Diseñado para quienes saben mirar más allá.</p>
+      <a href="#store" class="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition" data-translate="shop_button">Comprar Ahora</a>
     </section>
 
     <!-- About Section -->
@@ -66,7 +60,33 @@
     <section id="products" class="py-16 px-6">
       <h3 class="text-2xl font-semibold text-center mb-10">Colección Destacada</h3>
       <div class="grid md:grid-cols-3 gap-8">
-        <template x-for="product in products" :key="product.name">
+        <template x-for="product in products.slice(0, 3)" :key="product.name">
+          <div class="border rounded-xl p-4 text-center hover:shadow-xl transition">
+            <img :src="product.img" alt="Producto" class="rounded mb-4 mx-auto">
+            <h4 class="text-lg font-medium" x-text="product.name"></h4>
+            <p class="text-gray-500 text-sm">Diseño exclusivo, alta calidad</p>
+            <p class="font-bold mb-2">€<span x-text="product.price.toFixed(2)"></span></p>
+            <button @click="addToCart(product)" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">Añadir al carrito</button>
+          </div>
+        </template>
+      </div>
+    </section>
+
+    <!-- Full Store Section -->
+    <section id="store" class="py-16 px-6">
+      <h3 class="text-2xl font-semibold text-center mb-6">Todos los Productos</h3>
+      <div class="max-w-4xl mx-auto mb-6 text-right">
+        <label class="mr-2 font-medium">Ordenar por:</label>
+        <select class="border rounded p-2" x-model="sortOrder">
+          <option value="default">Por defecto</option>
+          <option value="priceAsc">Precio: menor a mayor</option>
+          <option value="priceDesc">Precio: mayor a menor</option>
+          <option value="nameAsc">Nombre A-Z</option>
+          <option value="nameDesc">Nombre Z-A</option>
+        </select>
+      </div>
+      <div class="grid md:grid-cols-3 gap-6">
+        <template x-for="product in sortedProducts" :key="product.name">
           <div class="border rounded-xl p-4 text-center hover:shadow-xl transition">
             <img :src="product.img" alt="Producto" class="rounded mb-4 mx-auto">
             <h4 class="text-lg font-medium" x-text="product.name"></h4>
@@ -95,18 +115,29 @@
       © 2025 VELATO. Todos los derechos reservados.
     </footer>
 
-    <!-- ScrollReveal -->
+    <!-- ScrollReveal y Alpine -->
     <script>
       ScrollReveal().reveal('section', { duration: 1000, distance: '50px', origin: 'bottom', reset: false });
 
       document.addEventListener('alpine:init', () => {
         Alpine.data('cartHandler', () => ({
           cart: [],
-          isCartOpen: false,
           products: [],
+          sortOrder: 'default',
           addToCart(product) { this.cart.push(product); },
           removeFromCart(index) { this.cart.splice(index, 1); },
           get total() { return this.cart.reduce((sum, item) => sum + item.price, 0).toFixed(2); },
+          get sortedProducts() {
+            return [...this.products].sort((a, b) => {
+              switch (this.sortOrder) {
+                case 'priceAsc': return a.price - b.price;
+                case 'priceDesc': return b.price - a.price;
+                case 'nameAsc': return a.name.localeCompare(b.name);
+                case 'nameDesc': return b.name.localeCompare(a.name);
+                default: return 0;
+              }
+            });
+          },
           async fetchProducts() {
             const res = await fetch('productos.json');
             this.products = await res.json();
@@ -126,9 +157,6 @@
                 });
               }
             }).render('#paypal-button-container');
-          },
-          toggleCart() {
-            this.isCartOpen = !this.isCartOpen;
           }
         }));
       });
