@@ -83,9 +83,7 @@
           const selected = { ...product, size: product.selectedSize || 'M' };
           this.cart.push(selected);
           localStorage.setItem('cart', JSON.stringify(this.cart)); // Guardamos el carrito en localStorage
-          setTimeout(() => { // Añadimos un pequeño retraso para asegurarnos de que el producto se guarda antes de redirigir
-            window.location.href = 'carrito.html'; // Redirigimos al carrito después de agregar
-          }, 200);
+          alert('Producto añadido al carrito'); // Mensaje de confirmación
         },
         fetchProducts() {
           fetch('productos.json') // Asegúrate de tener un archivo productos.json
