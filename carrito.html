@@ -6,6 +6,7 @@
   <title>Carrito de Compras - VELATO</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&components=buttons"></script> <!-- Reemplaza con tu Client ID -->
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Outfit', sans-serif; }
@@ -18,7 +19,7 @@
       <img src="logo.png" alt="Logo Velato" class="w-28 mb-4 cursor-pointer">
     </a>
     <nav class="space-x-6 text-sm">
-      <a href="#about" class="hover:underline">La Marca</a>
+      <a href="index.html" class="hover:underline">Inicio</a>
       <a href="shop.html" class="hover:underline">Tienda</a>
       <a href="carrito.html" class="hover:underline">Carrito</a>
       <a href="#contact" class="hover:underline">Contacto</a>
@@ -32,79 +33,76 @@
     <!-- Lista de Productos -->
     <div class="mb-8">
       <template x-for="(item, index) in cart" :key="index">
-        <div class="border p-4 rounded-lg mb-4 flex justify-between items-center">
-          <div>
-            <img :src="item.img" alt="Producto" class="w-16 h-16 rounded">
-            <h4 class="font-medium" x-text="item.name"></h4>
-            <p class="text-sm">Tamaño: <span x-text="item.size"></span></p>
+        <div class="flex justify-between items-center mb-4 border-b pb-4">
+          <div class="flex items-center">
+            <img :src="item.img" alt="Producto" class="w-16 h-16 object-cover mr-4">
+            <div>
+              <h4 class="font-medium" x-text="item.name"></h4>
+              <p class="text-sm text-gray-600">Talla: <span x-text="item.size"></span></p>
+              <p class="font-semibold">€<span x-text="item.price"></span></p>
+            </div>
           </div>
-          <div>
-            <p class="font-semibold" x-text="'€ ' + item.price.toFixed(2)"></p>
-          </div>
+          <button @click="removeFromCart(index)" class="text-red-600">Eliminar</button>
         </div>
       </template>
     </div>
 
-    <!-- Total y Formulario de Pago -->
-    <div class="flex justify-between items-center mb-6">
-      <p class="text-lg font-semibold">Total: €<span x-text="totalPrice().toFixed(2)"></span></p>
+    <!-- Total -->
+    <div class="text-right mb-8">
+      <h4 class="text-xl font-semibold">Total: €<span x-text="totalPrice.toFixed(2)"></span></h4>
     </div>
 
-    <!-- Formulario de Pago -->
-    <h4 class="text-xl font-semibold text-center mb-4">Datos de Envío y Pago</h4>
-    <form class="max-w-lg mx-auto" @submit.prevent="submitOrder">
-      <div class="space-y-4">
-        <input type="text" placeholder="Nombre Completo" class="w-full border p-2 rounded" required>
-        <input type="email" placeholder="Correo Electrónico" class="w-full border p-2 rounded" required>
-        <input type="text" placeholder="Dirección de Envío" class="w-full border p-2 rounded" required>
-        <input type="tel" placeholder="Teléfono" class="w-full border p-2 rounded" required>
-        <button type="submit" class="w-full bg-black text-white px-4 py-2 rounded hover:bg-gray-800">Realizar Pedido</button>
-      </div>
-    </form>
+    <!-- PayPal Button -->
+    <div id="paypal-button-container"></div>
+
+    <script>
+      document.addEventListener('alpine:init', () => {
+        Alpine.data('cartHandler', () => ({
+          cart: JSON.parse(localStorage.getItem('cart')) || [],
+          removeFromCart(index) {
+            this.cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(this.cart));
+          },
+          get totalPrice() {
+            return this.cart.reduce((acc, item) => acc + item.price, 0);
+          },
+          async fetchCart() {
+            if (this.cart.length === 0) return;
+            // Cargar los detalles del carrito desde el localStorage
+          }
+        }));
+      });
+
+      // Configurar el botón de PayPal
+      paypal.Buttons({
+        createOrder: (data, actions) => {
+          return actions.order.create({
+            purchase_units: [{
+              amount: {
+                value: document.querySelector('[x-text="totalPrice"]').innerText
+              }
+            }]
+          });
+        },
+        onApprove: async (data, actions) => {
+          const order = await actions.order.capture();
+          console.log('Pago completado', order);
+          // Aquí puedes hacer una solicitud a tu servidor para confirmar el pedido
+          alert('¡Gracias por tu compra! Tu pedido ha sido procesado.');
+          // Puedes redirigir a una página de confirmación o realizar alguna acción
+          window.location.href = 'confirmacion.html'; // Redirigir a una página de confirmación
+        },
+        onError: (err) => {
+          console.log('Error en el pago', err);
+          alert('Hubo un error procesando el pago. Inténtalo nuevamente.');
+        }
+      }).render('#paypal-button-container'); // Renderizar el botón en el contenedor
+    </script>
+
   </section>
 
-  <!-- AlpineJS & Funciones -->
-  <script>
-    document.addEventListener('alpine:init', () => {
-      Alpine.data('cartHandler', () => ({
-        cart: [],
-        fetchCart() {
-          const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
-          this.cart = storedCart;
-        },
-        totalPrice() {
-          return this.cart.reduce((sum, item) => sum + item.price, 0);
-        },
-        submitOrder() {
-          const formData = new FormData(event.target);
-          const orderDetails = {
-            items: this.cart,
-            customerInfo: {
-              name: formData.get('name'),
-              email: formData.get('email'),
-              address: formData.get('address'),
-              phone: formData.get('phone'),
-            },
-            total: this.totalPrice(),
-          };
-
-          // Enviar datos del pedido por correo (aquí puedes integrarlo con algún servicio como Formspree)
-          fetch('https://formspree.io/f/meoadano', {
-            method: 'POST',
-            body: new URLSearchParams(orderDetails)
-          })
-          .then(response => response.json())
-          .then(() => {
-            alert('Pedido realizado con éxito');
-            localStorage.removeItem('cart');
-            window.location.href = 'index.html'; // Redirigir a la página principal
-          })
-          .catch(error => {
-            alert('Hubo un error al procesar tu pedido');
-          });
-        }
-      }));
-    });
-  </script>
+  <footer class="text-center py-6 text-sm text-gray-500">
+    © 2025 VELATO. Todos los derechos reservados.
+  </footer>
 </body>
 </html>
