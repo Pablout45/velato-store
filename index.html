@@ -80,9 +80,11 @@
         sortOrder: 'default',
         searchQuery: '',
         addToCart(product) {
+          // Añadir el producto al carrito
           const selected = { ...product, size: product.selectedSize || 'M' };
           this.cart.push(selected);
-          localStorage.setItem('cart', JSON.stringify(this.cart)); // Guardamos el carrito en localStorage
+          // Guardamos el carrito en localStorage
+          localStorage.setItem('cart', JSON.stringify(this.cart));
           alert('Producto añadido al carrito'); // Mensaje de confirmación
         },
         fetchProducts() {
