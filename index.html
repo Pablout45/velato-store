@@ -23,10 +23,17 @@
         <a href="#shop" class="hover:underline">Tienda</a>
         <a href="#contact" class="hover:underline">Contacto</a>
       </nav>
+      <!-- Icono del carrito -->
+      <button @click="toggleCart()" class="relative text-xl p-2">
+        🛒
+        <span x-show="cart.length > 0" class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1">
+          <span x-text="cart.length"></span>
+        </span>
+      </button>
     </header>
 
-    <!-- Carrito -->
-    <div class="fixed top-6 right-6 bg-white border rounded-lg shadow-lg p-4 w-72 z-50" x-show="cart.length > 0" x-transition>
+    <!-- Carrito emergente -->
+    <div class="fixed top-6 right-6 bg-white border rounded-lg shadow-lg p-4 w-72 z-50" x-show="isCartOpen" x-transition>
       <h2 class="text-lg font-semibold mb-2">🛒 Tu carrito</h2>
       <template x-for="(item, index) in cart" :key="index">
         <div class="flex justify-between items-center mb-2">
@@ -95,6 +102,7 @@
       document.addEventListener('alpine:init', () => {
         Alpine.data('cartHandler', () => ({
           cart: [],
+          isCartOpen: false,
           products: [],
           addToCart(product) { this.cart.push(product); },
           removeFromCart(index) { this.cart.splice(index, 1); },
@@ -118,6 +126,9 @@
                 });
               }
             }).render('#paypal-button-container');
+          },
+          toggleCart() {
+            this.isCartOpen = !this.isCartOpen;
           }
         }));
       });
