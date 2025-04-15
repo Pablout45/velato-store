@@ -14,7 +14,6 @@
     <a href="index.html" class="text-2xl font-semibold tracking-widest">VELATO</a>
     <nav class="space-x-6 text-sm">
       <a href="index.html" class="hover:underline">Inicio</a>
-      <a href="#shop" class="hover:underline">Tienda</a>
       <a href="carrito.html" class="hover:underline">Carrito</a>
     </nav>
   </header>
@@ -36,10 +35,10 @@
       </template>
     </div>
 
-    <!-- Total -->
-    <div class="flex justify-between items-center py-4 border-t">
-      <p class="font-semibold">Total: €<span x-text="totalPrice.toFixed(2)"></span></p>
-      <button class="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition" @click="payWithPayPal">Pagar con PayPal</button>
+    <!-- Total y Pago -->
+    <div class="flex flex-col items-center mt-10">
+      <p class="font-semibold text-lg mb-4">Total: €<span x-text="totalPrice.toFixed(2)"></span></p>
+      <div id="paypal-button-container" class="w-full max-w-xs"></div>
     </div>
   </section>
 
@@ -48,7 +47,6 @@
     document.addEventListener('alpine:init', () => {
       Alpine.data('cartHandler', () => ({
         cart: JSON.parse(localStorage.getItem('cart') || '[]'),
-        totalPrice: 0,
 
         removeFromCart(index) {
           this.cart.splice(index, 1);
@@ -59,7 +57,7 @@
           return this.cart.reduce((total, item) => total + item.price, 0);
         },
 
-        payWithPayPal() {
+        init() {
           paypal.Buttons({
             createOrder: (data, actions) => {
               return actions.order.create({
@@ -83,9 +81,6 @@
       }));
     });
   </script>
-
-  <!-- PayPal Button Container -->
-  <div id="paypal-button-container"></div>
 
   <!-- Footer -->
   <footer class="text-center py-6 text-sm text-gray-500">
