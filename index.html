@@ -3,26 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VELATO</title>
+  <title>VELATO - Moda Minimalista</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/scrollreveal"></script>
-  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Outfit', sans-serif; }
-  </style>
+  <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </head>
-<body class="bg-white text-gray-900" x-data="cartHandler()">
+<body class="bg-white text-gray-900" x-data="shopHandler()">
   <!-- Header -->
   <header class="flex justify-between items-center p-6 border-b">
-    <h1 class="text-2xl font-semibold tracking-widest">VELATO</h1>
+    <a href="index.html" class="text-2xl font-semibold tracking-widest">VELATO</a>
     <nav class="space-x-6 text-sm">
-      <a href="#shop" class="hover:underline">Tienda</a>
+      <a href="index.html" class="hover:underline">Inicio</a>
       <a href="carrito.html" class="hover:underline">Carrito</a>
     </nav>
   </header>
 
-  <!-- Hero Section -->
+  <!-- Hero -->
   <section class="h-[90vh] flex flex-col items-center justify-center text-center px-4">
     <img src="logo.png" alt="Logo Velato" class="w-28 mb-4 animate-fade-in">
     <h2 class="text-4xl font-semibold mb-2">Sutileza con Carácter</h2>
@@ -30,87 +25,58 @@
     <a href="#shop" class="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition">Comprar Ahora</a>
   </section>
 
-  <!-- Shop Section -->
-  <section id="shop" class="py-16 px-6" x-init="fetchProducts()">
-    <h3 class="text-2xl font-semibold text-center mb-10">Tienda Online</h3>
-
-    <!-- Buscador y Filtro -->
-    <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-      <div>
-        <label for="sort" class="mr-2 font-medium">Ordenar por:</label>
-        <select id="sort" x-model="sortOrder" class="border p-2 rounded">
-          <option value="default">Por defecto</option>
-          <option value="priceAsc">Precio: Menor a Mayor</option>
-          <option value="priceDesc">Precio: Mayor a Menor</option>
-          <option value="nameAsc">Nombre: A-Z</option>
-          <option value="nameDesc">Nombre: Z-A</option>
-        </select>
-      </div>
-      <input type="text" x-model="searchQuery" placeholder="Buscar producto..." class="border p-2 rounded w-full md:w-64">
-    </div>
-
-    <!-- Productos -->
+  <!-- Tienda -->
+  <section id="shop" class="py-16 px-6">
+    <h3 class="text-2xl font-semibold text-center mb-10">Nuestra Colección</h3>
     <div class="grid md:grid-cols-3 gap-8">
-      <template x-for="(product, index) in filteredProducts" :key="index">
-        <div class="border rounded-xl p-4 text-center hover:shadow-xl transition">
-          <img :src="product.img" alt="Producto" class="rounded mb-4 mx-auto">
-          <h4 class="text-lg font-medium" x-text="product.name"></h4>
-          <p class="text-gray-500 text-sm">Diseño exclusivo, alta calidad</p>
-          <p class="font-bold mb-2">€<span x-text="product.price.toFixed(2)"></span></p>
-          <label for="talla" class="block text-sm font-medium mb-1">Talla:</label>
-          <select x-model="product.selectedSize" class="border rounded p-1 mb-3">
-            <option value="S">S</option>
-            <option value="M">M</option>
-            <option value="L">L</option>
-            <option value="XL">XL</option>
+      <template x-for="(item, index) in products" :key="index">
+        <div class="border rounded-xl p-4 text-center">
+          <img :src="item.img" alt="Producto" class="rounded mb-4 mx-auto h-48 object-cover">
+          <h4 class="text-lg font-medium" x-text="item.name"></h4>
+          <p class="text-gray-500 text-sm" x-text="item.description"></p>
+          <p class="font-bold mb-2">€<span x-text="item.price.toFixed(2)"></span></p>
+          <select x-model="item.size" class="mb-2 border p-1 rounded text-sm">
+            <option disabled selected>Talla</option>
+            <template x-for="size in ['S','M','L','XL']">
+              <option x-text="size"></option>
+            </template>
           </select>
-          <button @click="addToCart(product)" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">Añadir al carrito</button>
+          <button @click="addToCart(item)" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">Añadir al Carrito</button>
         </div>
       </template>
     </div>
   </section>
 
-  <!-- Footer -->
-  <footer class="text-center py-6 text-sm text-gray-500">
-    © 2025 VELATO. Todos los derechos reservados.
-  </footer>
+  <!-- Popup del carrito -->
+  <div x-show="showPopup" x-transition class="fixed bottom-4 right-4 bg-white border shadow-lg rounded p-4 flex items-center space-x-4">
+    <p>Producto añadido al carrito</p>
+    <a href="carrito.html" class="text-blue-500 hover:underline">🛒 Ir al carrito</a>
+  </div>
 
-  <!-- AlpineJS & Funciones -->
   <script>
-    document.addEventListener('alpine:init', () => {
-      Alpine.data('cartHandler', () => ({
-        cart: [],
-        products: [],
-        sortOrder: 'default',
-        searchQuery: '',
+    function shopHandler() {
+      return {
+        products: [
+          { name: 'Camiseta Minimal', description: 'Camiseta básica con logo sutil.', price: 29.99, img: 'camiseta1.png', size: null },
+          { name: 'Sudadera Oversized', description: 'Sudadera cómoda y elegante.', price: 59.99, img: 'sudadera1.png', size: null },
+          { name: 'Camiseta Logo', description: 'Logo discreto en el pecho.', price: 34.99, img: 'camiseta2.png', size: null }
+        ],
+        showPopup: false,
+
         addToCart(product) {
-          const selected = { ...product, size: product.selectedSize || 'M' };
-          this.cart.push(selected);
-          localStorage.setItem('cart', JSON.stringify(this.cart));
-        },
-        fetchProducts() {
-          fetch('productos.json')
-            .then(res => res.json())
-            .then(data => {
-              this.products = data.map(p => ({ ...p, selectedSize: 'M' }));
-            });
-        },
-        get sortedProducts() {
-          return [...this.products].sort((a, b) => {
-            switch (this.sortOrder) {
-              case 'priceAsc': return a.price - b.price;
-              case 'priceDesc': return b.price - a.price;
-              case 'nameAsc': return a.name.localeCompare(b.name);
-              case 'nameDesc': return b.name.localeCompare(a.name);
-              default: return 0;
-            }
-          });
-        },
-        get filteredProducts() {
-          return this.sortedProducts.filter(p => p.name.toLowerCase().includes(this.searchQuery.toLowerCase()));
-        },
-      }));
-    });
+          if (!product.size) {
+            alert('Por favor selecciona una talla.');
+            return;
+          }
+
+          const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+          cart.push({ ...product });
+          localStorage.setItem('cart', JSON.stringify(cart));
+          this.showPopup = true;
+          setTimeout(() => this.showPopup = false, 3000);
+        }
+      };
+    }
   </script>
 </body>
 </html>
