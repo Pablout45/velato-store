@@ -1,10 +1,10 @@
 [
   {
     "id": 1,
-    "name": "Camiseta Minimal",
+    "name": "Probar",
     "description": "Camiseta básica con logo sutil.",
     "price": 29.99,
-    "img": "https://images.wallpapersden.com/image/download/cool-4k-pattern_bGduZWyUmZqaraWkpJRoZWWtaWVl.jpg",
+    "img": "logo.png",
     "size": ["S", "M", "L", "XL"]
   },
   {
