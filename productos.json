@@ -1,32 +1,26 @@
 [
   {
-    "name": "Tralarero tralara",
+    "id": 1,
+    "name": "Camiseta Minimal",
+    "description": "Camiseta básica con logo sutil.",
     "price": 29.99,
-    "img": "https://media1.tenor.com/m/riuW5lq1bt0AAAAd/tralalero-tralala.gif"
+    "img": "camiseta1.png",
+    "size": ["S", "M", "L", "XL"]
   },
   {
-    "name": "Bombardino Crocodilo",
-    "price": 39.99,
-    "img": "https://fbi.cults3d.com/uploaders/41050705/illustration-file/4f42baaf-8245-476e-9ea6-78b8f7d8223c/crocodilo-bombardino.jpg"
-  },
-  {
-    "name": "Tung tung tung sahur",
-    "price": 19.99,
-    "img": "https://uploads.dailydot.com/2025/04/tung-tung-sahur-meme-2.png?q=65&auto=format&w=800"
-  },
-  {
-    "name": "Sudadera Logo Sutil",
+    "id": 2,
+    "name": "Sudadera Oversized",
+    "description": "Sudadera cómoda y elegante.",
     "price": 59.99,
-    "img": "https://via.placeholder.com/300x400?text=Sudadera+Logo"
+    "img": "sudadera1.png",
+    "size": ["S", "M", "L", "XL"]
   },
   {
-    "name": "Pantalón Relax Fit Gris",
-    "price": 70.00,
-    "img": "https://via.placeholder.com/300x400?text=Pantalon+Relax"
-  },
-  {
-    "name": "Gorra Bordada Velato",
-    "price": 30.00,
-    "img": "https://via.placeholder.com/300x400?text=Gorra+Bordada"
+    "id": 3,
+    "name": "Camiseta Logo",
+    "description": "Logo discreto en el pecho.",
+    "price": 34.99,
+    "img": "camiseta2.png",
+    "size": ["S", "M", "L", "XL"]
   }
 ]
