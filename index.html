@@ -37,7 +37,7 @@
           <p class="font-bold mb-2">€<span x-text="item.price.toFixed(2)"></span></p>
           <select x-model="item.size" class="mb-2 border p-1 rounded text-sm">
             <option disabled selected>Talla</option>
-            <template x-for="size in ['S','M','L','XL']">
+            <template x-for="size in item.size">
               <option x-text="size"></option>
             </template>
           </select>
@@ -56,12 +56,18 @@
   <script>
     function shopHandler() {
       return {
-        products: [
-          { name: 'Camiseta Minimal', description: 'Camiseta básica con logo sutil.', price: 29.99, img: 'camiseta1.png', size: null },
-          { name: 'Sudadera Oversized', description: 'Sudadera cómoda y elegante.', price: 59.99, img: 'sudadera1.png', size: null },
-          { name: 'Camiseta Logo', description: 'Logo discreto en el pecho.', price: 34.99, img: 'camiseta2.png', size: null }
-        ],
+        products: [],
         showPopup: false,
+
+        init() {
+          // Cargar productos desde el archivo JSON
+          fetch('productos.json')
+            .then(response => response.json())
+            .then(data => {
+              this.products = data;
+            })
+            .catch(error => console.error('Error al cargar productos:', error));
+        },
 
         addToCart(product) {
           if (!product.size) {
@@ -77,6 +83,10 @@
         }
       };
     }
+
+    document.addEventListener('alpine:init', () => {
+      Alpine.start();
+    });
   </script>
 </body>
 </html>
