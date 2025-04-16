@@ -4,7 +4,7 @@
     "name": "Camiseta Minimal",
     "description": "Camiseta básica con logo sutil.",
     "price": 29.99,
-    "img": "camiseta1.png",
+    "img": "https://images.wallpapersden.com/image/download/cool-4k-pattern_bGduZWyUmZqaraWkpJRoZWWtaWVl.jpg",
     "size": ["S", "M", "L", "XL"]
   },
   {
