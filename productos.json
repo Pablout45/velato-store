@@ -1,7 +1,7 @@
 [
   {
     "id": 1,
-    "name": "Limfoma testicular",
+    "name": "Camiseta básica",
     "description": "Camiseta básica con logo sutil.",
     "price": 29.99,
     "img": "logo.png",
@@ -12,7 +12,7 @@
     "name": "Sudadera Oversized",
     "description": "Sudadera cómoda y elegante.",
     "price": 59.99,
-    "img": "sudadera1.png",
+    "img": "logo.png",
     "size": ["S", "M", "L", "XL"]
   },
   {
@@ -20,7 +20,7 @@
     "name": "Camiseta Logo",
     "description": "Logo discreto en el pecho.",
     "price": 34.99,
-    "img": "camiseta2.png",
+    "img": "logo.png",
     "size": ["S", "M", "L", "XL"]
   }
 ]
