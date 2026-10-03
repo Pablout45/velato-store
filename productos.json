@@ -1,7 +1,7 @@
 [
   {
     "id": 1,
-    "name": "Camiseta básica",
+    "name": "Mochi",
     "description": "Camiseta básica con logo sutil.",
     "price": 29.99,
     "img": "logo.png",
@@ -9,7 +9,7 @@
   },
   {
     "id": 2,
-    "name": "Sudadera Oversized",
+    "name": "Roni",
     "description": "Sudadera cómoda y elegante.",
     "price": 59.99,
     "img": "logo.png",
